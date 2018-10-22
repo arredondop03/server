@@ -8,11 +8,17 @@ const hbs          = require('hbs');
 const mongoose     = require('mongoose');
 const logger       = require('morgan');
 const path         = require('path');
+const passport     = require('passport');
+const session      = require('express-session');
+const passportSetup= require('./config/passport');
+const cors         = require('cors');
+
+passportSetup(passport);
 
 
 mongoose.Promise = Promise;
 mongoose
-  .connect('mongodb://localhost/dotkidsbackend', {useMongoClient: true})
+  .connect('mongodb://localhost/dotkidsbackendNOTFORREALSIES', {useMongoClient: true})
   .then(() => {
     console.log('Connected to Mongo!')
   }).catch(err => {
@@ -44,15 +50,39 @@ app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
+app.use(session({
+  secret: 'angular auth passport secret shh',
+  resave: true,
+  saveUninitialized: true,
+  cookie : {httpOnly: true, maxAge: 2419200000}
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 // default value for title local
 app.locals.title = 'Express - Generated with IronGenerator';
 
-
+app.use(cors({
+  credentials:true,
+  origin: ['http://localhost:4200']
+}))
 
 const index = require('./routes/index');
 app.use('/', index);
+
+const userRoutes = require('./routes/userRoutes');
+app.use('/api', userRoutes);
+
+//THE LINE BELOW CALLS YOUR ANGULAR2 APP.
+//THIS WILL INTERFERE WITH DEV, SO COMMENT IT OUT WHEN DEV. 
+//REACTIVATE IT WHEN PRODUCTION TIME
+// app.use((req, res, next) => {
+//   res.sendfile(__dirname + '/public/index.html');
+// });
+
+
 
 
 module.exports = app;

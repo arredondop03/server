@@ -15,14 +15,26 @@ userRoutes.post('/signup', (req, res, next) => {
 
   const username = req.body.username;
   const password = req.body.password;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const email = req.body.email;
+  const phone = req.body.phone;
+  const addressStreet = req.body.addressStreet;
+  const addressContinued = req.body.addressContinued;
+  const city = req.body.city;
+  const zipCode = req.body.zipCode;
+  const terms = req.body.terms;
+  const state = req.body.state;
+
+
   if (!username || !password) {
       res.status(400).json({ message: 'Provide username and password' });
       return;
   } //closed
-  if (password.length <= 7) {
-      res.status(400).json({ message: 'Please make your password longer' });
-      return;
-  } //closed
+//   if (password.length <= 7) {
+//       res.status(400).json({ message: 'Please make your password longer' });
+//       return;
+//   } //closed
 
   User.findOne({ username }, '_id', (err, foundUser) => {
       if (foundUser) {
@@ -34,8 +46,19 @@ userRoutes.post('/signup', (req, res, next) => {
       const theUser = new User({
           username: username,
           password: hashPass,
-          // tournaments: [] not needed
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
+          addressStreet: addressStreet,
+          addressContinued: addressContinued,
+          city: city,
+          zipCode: zipCode,
+          terms: terms,
+          state: state,
       }); //closed
+
+      console.log(theUser);
 
       theUser.save((err) => {
           if (err) {
@@ -43,12 +66,14 @@ userRoutes.post('/signup', (req, res, next) => {
               return;
           } //closed
 
-          req.login(theUser, (err) => {
+          
+          req.logIn(theUser, (err) => {
               if (err) {
                   res.status(500).json({ message: 'Something went wrong' });
                   return;
               } //closed
-              res.status(200).json(req.user);
+
+              res.status(200).json(theUser);
           }); //req.login
       }); //theUser.save 
   }); // User.findOne
@@ -119,7 +144,7 @@ userRoutes.post('/login', (req, res, next) => {
 
 userRoutes.get('/profile/:id', /*ensureLoggedIn('/'),*/(req, res, next) => {
   const theId = req.params.id
-  // User.findById(theId)
+  User.findById(theId)
   // .populate('tournaments')
   // .populate('tournamentAdminOf')
   // .populate('teamCaptainOf')

@@ -18,7 +18,7 @@ passportSetup(passport);
 
 mongoose.Promise = Promise;
 mongoose
-  .connect('mongodb://localhost/dotkidsbackendNOTFORREALSIES', {useMongoClient: true})
+  .connect('mongodb://localhost/dotKids', {useMongoClient: true})
   .then(() => {
     console.log('Connected to Mongo!')
   }).catch(err => {

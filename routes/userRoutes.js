@@ -25,10 +25,11 @@ userRoutes.post('/signup', (req, res, next) => {
   const zipCode = req.body.zipCode;
   const terms = req.body.terms;
   const state = req.body.state;
+  const familyName = req.body.familyName;
 
 
   if (!username || !password) {
-      res.status(400).json({ message: 'Provide username and password' });
+      res.json({ message: 'Provide username and password' });
       return;
   } //closed
 //   if (password.length <= 7) {
@@ -38,7 +39,7 @@ userRoutes.post('/signup', (req, res, next) => {
 
   User.findOne({ username }, '_id', (err, foundUser) => {
       if (foundUser) {
-          res.status(400).json({ message: 'The username already exists' });
+          res.json({ message: 'The username already exists' });
           return;
       } //closed
       const salt = bcrypt.genSaltSync(10);
@@ -56,13 +57,15 @@ userRoutes.post('/signup', (req, res, next) => {
           zipCode: zipCode,
           terms: terms,
           state: state,
+          familyName: familyName
       }); //closed
 
       console.log(theUser);
 
       theUser.save((err) => {
           if (err) {
-              res.status(400).json({ message: 'Something went wrong' });
+              console.log(err.message)
+              res.json({ message: err.message });
               return;
           } //closed
 

@@ -3,19 +3,19 @@ const Schema = mongoose.Schema // connects model to  database in mongo etc...
 
 //Making the user
 const userSchema = new Schema({
-    username: String,
-    password: String,
-    firstName: String,
-    lastName: String,
-    email: String,
+    username: {type: String, required: true},
+    password:  {type: String, required: true},
+    firstName: {type: String, required: true},
+    lastName:  {type: String, required: true},
+    email:  {type: String, required: true},
     phone: Number,
-    addressStreet: String,
-    addressContinued: String,
-    city: String,
+    addressStreet:  {type: String, required: true},
+    addressContinued:  {type: String, required: false},
+    city:  {type: String, required: true},
     zipCode: Number,
     terms: Boolean,
     state: {
-        type: String, 
+        type:  String,
         enum: ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 
                'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 
                'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 
@@ -25,6 +25,7 @@ const userSchema = new Schema({
                'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 
                'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 
                'WI', 'WY']},
+    familyName:  {type: String, required: true}
     },
     { timestamps: true }
 );

@@ -15,9 +15,11 @@ userRoutes.post('/signup', (req, res, next) => {
 
   const username = req.body.username;
   const password = req.body.password;
+  const verifyPassword = req.body.verifyPassword;
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const email = req.body.email;
+  const confirmEmail = req.body.confirmEmail;
   const phone = req.body.phone;
   const addressStreet = req.body.addressStreet;
   const addressContinued = req.body.addressContinued;
@@ -32,10 +34,30 @@ userRoutes.post('/signup', (req, res, next) => {
       res.json({ message: 'Provide username and password' });
       return;
   } //closed
-//   if (password.length <= 7) {
-//       res.status(400).json({ message: 'Please make your password longer' });
-//       return;
-//   } //closed
+  if (password.length <= 7 ) {
+      res.json({ message: 'Please make your password has at least 8 characters' });
+      return;
+  } //closed
+  if(email !== confirmEmail){
+    res.json({ message: 'Please make sure your email and confirmation email are the same' });
+    console.log('not same email')
+    return;
+  }
+  if(!email.includes('@')){
+    res.json({ message: 'Please make sure you input a valid message' });
+    console.log('not valid email')
+    return;
+  }
+  if(password !== verifyPassword){
+    res.json({ message: 'Please make sure your password and confirmation password are the same' });
+    console.log('not same password', password, verifyPassword)
+    return;
+  }
+  if(!terms){
+    res.json({ message: 'You need to agree to our terms and conditions in order to create an account with us' });
+    console.log('accept terms and conditions', password, verifyPassword)
+    return;
+  }
 
   User.findOne({ username }, '_id', (err, foundUser) => {
       if (foundUser) {

@@ -15,18 +15,53 @@ userRoutes.post('/signup', (req, res, next) => {
 
   const username = req.body.username;
   const password = req.body.password;
+  const verifyPassword = req.body.verifyPassword;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const email = req.body.email;
+  const confirmEmail = req.body.confirmEmail;
+  const phone = req.body.phone;
+  const addressStreet = req.body.addressStreet;
+  const addressContinued = req.body.addressContinued;
+  const city = req.body.city;
+  const zipCode = req.body.zipCode;
+  const terms = req.body.terms;
+  const state = req.body.state;
+  const familyName = req.body.familyName;
+
+
   if (!username || !password) {
-      res.status(400).json({ message: 'Provide username and password' });
+      res.json({ message: 'Provide username and password' });
       return;
   } //closed
-  if (password.length <= 7) {
-      res.status(400).json({ message: 'Please make your password longer' });
+  if (password.length <= 7 ) {
+      res.json({ message: 'Please make your password has at least 8 characters' });
       return;
   } //closed
+  if(email !== confirmEmail){
+    res.json({ message: 'Please make sure your email and confirmation email are the same' });
+    console.log('not same email')
+    return;
+  }
+  if(!email.includes('@')){
+    res.json({ message: 'Please make sure you input a valid message' });
+    console.log('not valid email')
+    return;
+  }
+  if(password !== verifyPassword){
+    res.json({ message: 'Please make sure your password and confirmation password are the same' });
+    console.log('not same password', password, verifyPassword)
+    return;
+  }
+  if(!terms){
+    res.json({ message: 'You need to agree to our terms and conditions in order to create an account with us' });
+    console.log('accept terms and conditions', password, verifyPassword)
+    return;
+  }
 
   User.findOne({ username }, '_id', (err, foundUser) => {
       if (foundUser) {
-          res.status(400).json({ message: 'The username already exists' });
+          res.json({ message: 'The username already exists' });
           return;
       } //closed
       const salt = bcrypt.genSaltSync(10);
@@ -34,21 +69,36 @@ userRoutes.post('/signup', (req, res, next) => {
       const theUser = new User({
           username: username,
           password: hashPass,
-          // tournaments: [] not needed
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
+          addressStreet: addressStreet,
+          addressContinued: addressContinued,
+          city: city,
+          zipCode: zipCode,
+          terms: terms,
+          state: state,
+          familyName: familyName
       }); //closed
+
+      console.log(theUser);
 
       theUser.save((err) => {
           if (err) {
-              res.status(400).json({ message: 'Something went wrong' });
+              console.log(err.message)
+              res.json({ message: err.message });
               return;
           } //closed
 
-          req.login(theUser, (err) => {
+          
+          req.logIn(theUser, (err) => {
               if (err) {
                   res.status(500).json({ message: 'Something went wrong' });
                   return;
               } //closed
-              res.status(200).json(req.user);
+
+              res.status(200).json(theUser);
           }); //req.login
       }); //theUser.save 
   }); // User.findOne
@@ -119,7 +169,7 @@ userRoutes.post('/login', (req, res, next) => {
 
 userRoutes.get('/profile/:id', /*ensureLoggedIn('/'),*/(req, res, next) => {
   const theId = req.params.id
-  // User.findById(theId)
+  User.findById(theId)
   // .populate('tournaments')
   // .populate('tournamentAdminOf')
   // .populate('teamCaptainOf')
